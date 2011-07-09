@@ -1,0 +1,4 @@
+SVED requires gVim (for the dbus support) and Evince version 3.0 or later.
+Place the plugin in ~/.vim/ftplugin/
+and create a binding to do forward search:
+nmap <F4> :call EVS_Sync()<CR>
