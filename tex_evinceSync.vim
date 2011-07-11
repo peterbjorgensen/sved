@@ -50,7 +50,7 @@ class EvinceSync:
         self.sync_queue = []
         if debug:
             self.debug = self.debug_to_file
-            self.debug_file = open("~/evslog.txt", "w")
+            self.debug_file = open(os.path.expanduser("~/evslog.txt"), "w")
         else:
             self.debug = self.debug_dummy
 
