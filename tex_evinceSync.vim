@@ -22,7 +22,7 @@ endfunction
 
 function! EVS_StartDaemon()
 python << endofpython
-evs_daemon = EvinceSync(True)
+evs_daemon = EvinceSync()
 evs_daemon.init_connection()
 endofpython
 endfunction
@@ -73,19 +73,19 @@ class EvinceSync:
         """Establish connection to dbus session bus"""
         self.debug("connect_bus: connecting to dbus")
         self.bus = dbus.SessionBus()
-        self.bus.add_signal_receiver(self.on_document_load,\
-               signal_name = "DocumentLoaded",\
-               dbus_interface = "org.gnome.evince.Window",\
+        self.bus.add_signal_receiver(self.on_document_load,
+               signal_name = "DocumentLoaded",
+               dbus_interface = "org.gnome.evince.Window",
                sender_keyword = "sender")
-        self.bus.add_signal_receiver(self.on_sync_source,\
-                signal_name = "SyncSource",\
+        self.bus.add_signal_receiver(self.on_sync_source,
+                signal_name = "SyncSource",
                 dbus_interface = "org.gnome.evince.Window")
 
     def connect_daemon(self):
         """Establish connection to Evince dbus Daemon"""
         self.debug("connect_daemon: connecting to Evince daemon")
         self.daemon = self.bus.get_object(
-                    "org.gnome.evince.Daemon",\
+                    "org.gnome.evince.Daemon",
                     "/org/gnome/evince/Daemon")
 
     def sync_view(self, source_file, data):
@@ -99,14 +99,15 @@ class EvinceSync:
             self.debug("sync_view: Failed to get main pdf uri")
             return
         self.sync_queue.append((pdf_uri, source_file, data))
-        self.daemon.FindDocument(pdf_uri, True,\
-            dbus_interface="org.gnome.evince.Daemon",\
-            reply_handler=self.handle_find_document_reply,\
+        self.daemon.FindDocument(pdf_uri, True,
+            dbus_interface="org.gnome.evince.Daemon",
+            reply_handler=self.handle_find_document_reply,
             error_handler=self.handle_find_document_error )
 
     def on_sync_source(self, input_file, source_link, timestamp):
         """Handle SyncSource signal from evince.Window"""
-        self.debug( "on_sync_source received: %s %s" % (input_file, source_link) )
+        self.debug( "on_sync_source received: %s %s" 
+                % (input_file, source_link) )
         #find uri separator
         index = input_file.find("://")
         if index == -1:
@@ -126,7 +127,7 @@ class EvinceSync:
         self.debug("on_document_load received: %s, %s" % (uri, sender))
 
     def handle_find_document_reply(self, evince_name):
-        self.debug("handle_find_document_reply: Find document reply: "\
+        self.debug("handle_find_document_reply: Find document reply: "
                 + evince_name)
         if evince_name != "":
             self.evince_name = evince_name
@@ -136,7 +137,7 @@ class EvinceSync:
                             dbus_interface = "org.gnome.evince.Application")
 
     def handle_find_document_error(self, err):
-        self.debug("handle_find_document_error: "\
+        self.debug("handle_find_document_error: "
                 + err.get_dbus_message())
         self.sync_queue = []
 
@@ -146,7 +147,7 @@ class EvinceSync:
             pdf_uri, source_file, data = self.sync_queue.pop(0)
             window_path = window_list[0]
             window_proxy = self.bus.get_object(self.evince_name, window_path)
-            window_proxy.SyncView(source_file, data, 0, \
+            window_proxy.SyncView(source_file, data, 0, 
                         dbus_interface="org.gnome.evince.Window")
         else:
             self.debug("handle_get_window_list_reply: empty sync" +
@@ -155,7 +156,7 @@ class EvinceSync:
         
 
     def handle_get_window_list_error(self, err):
-        self.debug("handle_get_window_list_error: "\
+        self.debug("handle_get_window_list_error: "
                 + err.get_dbus_message())
         self.sync_queue = []
 
