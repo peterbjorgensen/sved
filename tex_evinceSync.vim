@@ -1,5 +1,5 @@
 " Vim global plugin for synchronizing vim and evince with synctex
-" Last Change:  2011 July 11
+" Last Change:  2011 July 12
 " Maintainer:   Peter B. Jørgensen <peterbjorgensen@gmail.com>
 " License:  This file is licensed under the BEER-WARE license rev 42.
 "   THE BEER-WARE LICENSE" (Revision 42):
@@ -22,7 +22,7 @@ endfunction
 
 function! EVS_StartDaemon()
 python << endofpython
-evs_daemon = EvinceSync()
+evs_daemon = EvinceSync(True)
 evs_daemon.init_connection()
 endofpython
 endfunction
@@ -48,6 +48,7 @@ class EvinceSync:
     def __init__(self, debug=False):
         self.bus = None
         self.daemon = None
+        self.evince_name = ""
         self.sync_queue = []
         if debug:
             self.debug = self.debug_to_file
@@ -124,19 +125,39 @@ class EvinceSync:
         """Handle DocumentLoaded signal from evince.Window"""
         self.debug("on_document_load received: %s, %s" % (uri, sender))
 
-    def handle_find_document_reply(self, window_name):
+    def handle_find_document_reply(self, evince_name):
         self.debug("handle_find_document_reply: Find document reply: "\
-                + window_name)
-        pdf_uri, source_file, data = self.sync_queue.pop(0)
-        window_proxy = self.bus.get_object(window_name,\
-                    "/org/gnome/evince/Window/0")
-        window_proxy.SyncView(source_file, data, 0, \
-                    dbus_interface="org.gnome.evince.Window")
+                + evince_name)
+        if evince_name != "":
+            self.evince_name = evince_name
+            ev = self.bus.get_object(evince_name, "/org/gnome/evince/Evince")
+            ev.GetWindowList(reply_handler = self.handle_get_window_list_reply,
+                            error_handler = self.handle_get_window_list_error,
+                            dbus_interface = "org.gnome.evince.Application")
 
     def handle_find_document_error(self, err):
-        self.debug("handle_find_document_error: Find document error:"\
+        self.debug("handle_find_document_error: "\
                 + err.get_dbus_message())
-        self.sync_queue.pop(0)
+        self.sync_queue = []
+
+    def handle_get_window_list_reply(self, window_list):
+        self.debug("handle_get_window_list_reply: " + str(window_list))
+        if len(self.sync_queue) > 0 and len(window_list) > 0:
+            pdf_uri, source_file, data = self.sync_queue.pop(0)
+            window_path = window_list[0]
+            window_proxy = self.bus.get_object(self.evince_name, window_path)
+            window_proxy.SyncView(source_file, data, 0, \
+                        dbus_interface="org.gnome.evince.Window")
+        else:
+            self.debug("handle_get_window_list_reply: empty sync" +
+                    " queue or window list")
+            self.sync_queue = []
+        
+
+    def handle_get_window_list_error(self, err):
+        self.debug("handle_get_window_list_error: "\
+                + err.get_dbus_message())
+        self.sync_queue = []
 
     def debug_to_file(self, s):
         self.debug_file.write(str(time.time()) + " " + s + " \n")
