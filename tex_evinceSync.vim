@@ -1,5 +1,5 @@
 " Vim global plugin for synchronizing vim and evince with synctex
-" Last Change:  2011 July 09
+" Last Change:  2011 July 11
 " Maintainer:   Peter B. Jørgensen <peterbjorgensen@gmail.com>
 " License:  This file is licensed under the BEER-WARE license rev 42.
 "   THE BEER-WARE LICENSE" (Revision 42):
@@ -37,6 +37,7 @@ from traceback import print_exc
 from dbus.mainloop.glib import DBusGMainLoop
 import vim
 import glob
+import time
 
 dbus.mainloop.glib.threads_init()
 DBusGMainLoop(set_as_default=True)
@@ -138,7 +139,7 @@ class EvinceSync:
         self.sync_queue.pop(0)
 
     def debug_to_file(self, s):
-        self.debug_file.write(s + " \n")
+        self.debug_file.write(str(time.time()) + " " + s + " \n")
         self.debug_file.flush()
         os.fsync(self.debug_file)
 
