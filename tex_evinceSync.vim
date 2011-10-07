@@ -185,12 +185,12 @@ class EvinceSync:
             #Remove .latexmain
             filepath = name.rpartition(".")[0] 
             if os.path.exists(filepath + ".pdf"):
-                return "file://" + filepath + ".pdf"
+                return "file://" + urllib.quote(filepath) + ".pdf"
             self.debug("get_pdf_file_uri: No pdf at: " + filepath + ".pdf")
             #Remove .tex
             filepath = filepath.rpartition(".")[0] 
             if os.path.exists(filepath + ".pdf"):
-                return "file://" + filepath + ".pdf"
+                return "file://" + urllib.quote(filepath) + ".pdf"
             self.debug("get_pdf_file_uri: No pdf at: " + filepath + ".pdf")
         return None
 
