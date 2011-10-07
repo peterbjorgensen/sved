@@ -22,7 +22,7 @@ endfunction
 
 function! EVS_StartDaemon()
 python << endofpython
-evs_daemon = EvinceSync()
+evs_daemon = EvinceSync(True)
 evs_daemon.init_connection()
 endofpython
 endfunction
@@ -38,6 +38,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 import vim
 import glob
 import time
+import urllib
 
 dbus.mainloop.glib.threads_init()
 DBusGMainLoop(set_as_default=True)
@@ -113,7 +114,7 @@ class EvinceSync:
         if index == -1:
             self.debug("on_sync_source: '://' not found in input_file")
             return
-        source = input_file[index+3:]
+        source = urllib.unquote(input_file[index+3:]).replace(" ","\\ ")
         line = source_link[0]
         cmd = "edit! +%d %s" % (line, source)
         self.debug("on_sync_source: Executing %s" % (cmd))
