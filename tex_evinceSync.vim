@@ -93,7 +93,11 @@ class EvinceSync:
         """Forward sync Evince with source_file and data (line,column)"""
         self.debug("sync_view: Forward syncing")
         self.connect_daemon()
-        pdf_uri = self.get_pdf_file_uri()
+        try:
+            pdf_uri, source_file = self.get_pdf_file_uri(source_file)
+        except:
+            self.debug("sync_view: Failed to get main pdf uri")
+            return
         if pdf_uri:
             self.debug("sync_view: Found main pdf uri: %s" % (pdf_uri))
         else:
@@ -148,6 +152,8 @@ class EvinceSync:
             pdf_uri, source_file, data = self.sync_queue.pop(0)
             window_path = window_list[0]
             window_proxy = self.bus.get_object(self.evince_name, window_path)
+            self.debug("handle_get_window_list_reply: calling SyncView %s %s" %
+                (source_file, data) )
             window_proxy.SyncView(source_file, data, 0, 
                         dbus_interface="org.gnome.evince.Window")
         else:
@@ -169,9 +175,12 @@ class EvinceSync:
     def debug_dummy(self, s):
         pass
         
-    def get_pdf_file_uri(self):
+    def get_pdf_file_uri(self, source_file):
         """Find mainfile of latex project - expect the use
-        of *.latexmain"""
+        of *.latexmain. Returns:
+            * pdf file uri 
+            * source_file with '/.' added at the main file location 
+                (TexLive 2011 workaround)"""
         path = vim.current.buffer.name
         if path is None:
             path = vim.eval("getcwd()")
@@ -181,18 +190,23 @@ class EvinceSync:
                 self.debug("get_pdf_file_uri: Found master file %s" % (mainfile))
                 break
             path = os.path.dirname(path)
+        pdffile = None
         for name in mainfile:
             #Remove .latexmain
             filepath = name.rpartition(".")[0] 
             if os.path.exists(filepath + ".pdf"):
-                return "file://" + urllib.quote(filepath) + ".pdf"
+                pdffile = "file://" + urllib.quote(filepath) + ".pdf"
+                break
             self.debug("get_pdf_file_uri: No pdf at: " + filepath + ".pdf")
             #Remove .tex
             filepath = filepath.rpartition(".")[0] 
             if os.path.exists(filepath + ".pdf"):
-                return "file://" + urllib.quote(filepath) + ".pdf"
+                pdffile = "file://" + urllib.quote(filepath) + ".pdf"
+                break
             self.debug("get_pdf_file_uri: No pdf at: " + filepath + ".pdf")
-        return None
+        mainfolder = filepath.rpartition("/")[0]
+        source = source_file.replace(mainfolder, mainfolder + "/.", 1)
+        return pdffile, source
 
 EOF
 endfunction
