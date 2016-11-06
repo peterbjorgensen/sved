@@ -22,7 +22,7 @@ endfunction
 
 function! EVS_StartDaemon()
 python << endofpython
-evs_daemon = EvinceSync(True)
+evs_daemon = EvinceSync()
 evs_daemon.init_connection()
 endofpython
 endfunction
