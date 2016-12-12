@@ -39,6 +39,7 @@ function! SVED_Sync()
 	if empty(l:curpath)
 		let l:curpath = l:origdir
 	endif
+	execute "cd " . fnameescape(l:curpath)
 
 	"Loop upwards from current path and search for .synctex.gz or .latexmain
 	let l:stopdepth = 100
