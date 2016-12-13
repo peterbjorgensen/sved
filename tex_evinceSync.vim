@@ -46,14 +46,6 @@ function! SVED_Sync()
 	let l:pdffile = ""
 	let l:foundpdf = 0
 	while getcwd() != "/" && l:stopdepth >= 0
-		let l:matches = glob("*.synctex.gz", 0, 1)
-		if !empty(l:matches)
-			let l:pdffile = fnamemodify(l:matches[0],":p:r:r" ) . ".pdf"
-			if filereadable(l:pdffile)
-				let l:foundpdf = 1
-				break
-			endif
-		endif
 		let l:matches = glob("*.latexmain", 0, 1)
 		if !empty(l:matches)
 			let l:pdffile = fnamemodify(l:matches[0],":p:r:r" ) . ".pdf"
@@ -62,6 +54,14 @@ function! SVED_Sync()
 				break
 			endif
 			let l:pdffile = fnamemodify(l:matches[0],":p:r" ) . ".pdf"
+			if filereadable(l:pdffile)
+				let l:foundpdf = 1
+				break
+			endif
+		endif
+		let l:matches = glob("*.synctex.gz", 0, 1)
+		if !empty(l:matches)
+			let l:pdffile = fnamemodify(l:matches[0],":p:r:r" ) . ".pdf"
 			if filereadable(l:pdffile)
 				let l:foundpdf = 1
 				break
