@@ -5,7 +5,7 @@
 # Maintainer:   Peter B. Jørgensen <peterbjorgensen@gmail.com>
 # License:  This file is licensed under the BEER-WARE license rev 42.
 #   THE BEER-WARE LICENSE" (Revision 42):
-#   <peterbjorgensen@gmail.com> wrote this file. 
+#   <peterbjorgensen@gmail.com> wrote this file.
 #   As long as you retain this notice you can do whatever you want with this stuff.
 #   If we meet some day, and you think this stuff is worth it, you can buy me a beer in return.
 
@@ -20,7 +20,7 @@ import logging
 
 class EvinceSync(object):
     """A DBus proxy for an Evince Window. Base class."""
-    
+
     def __init__(self):
         self.bus = None
         self.daemon = None
@@ -39,7 +39,7 @@ class EvinceSyncSource(EvinceSync):
 
     def on_sync_source(self, input_file, source_link, timestamp):
         """Handle SyncSource signal from evince.Window"""
-        logging.debug( "on_sync_source received: %s %s" 
+        logging.debug( "on_sync_source received: %s %s"
                 % (input_file, source_link) )
         # Check for file:// in uri
         if not input_file.startswith("file://"):
@@ -54,7 +54,7 @@ class EvinceSyncSource(EvinceSync):
         sys.stdout.flush()
 
 class EvinceSyncView(EvinceSync):
-    """Handle chain of operations for foward synchronisation"""
+    """Handle chain of operations for forward synchronisation"""
     def __init__(self, done_callback=None):
         super(EvinceSyncView, self).__init__()
 
@@ -123,19 +123,19 @@ class EvinceSyncView(EvinceSync):
             window_proxy = self.bus.get_object(self.evince_name, window_path)
             logging.debug("handle_get_window_list_reply: calling SyncView %s %s" %
                 (self.source_file, self.curpos) )
-            window_proxy.SyncView(self.source_file, self.curpos, 0, 
+            window_proxy.SyncView(self.source_file, self.curpos, 0,
                         dbus_interface="org.gnome.evince.Window")
             logging.debug("SyncView done")
             if self.done_callback:
                 self.done_callback()
         else:
             logging.debug("handle_get_window_list_reply: empty window list")
-        
+
 
     def handle_get_window_list_error(self, err):
         logging.debug("handle_get_window_list_error: "
                 + err.get_dbus_message())
-        
+
 
 def sync_view(pdf_path, input_path, curpos):
     sved_daemon = EvinceSyncView(done_callback = quit_callback)
