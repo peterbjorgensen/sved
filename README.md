@@ -1,14 +1,22 @@
 # Description
 SVED is a Vim plugin enabling synctex synchronization
 support for Vim and Evince through DBus.
+Vim/gVim and Neovim are supported
 
 # Requirements
-SVED requires Vim 8 (for asynchronous job support) 
+SVED requires Neovim or Vim 8 (for asynchronous job support) 
 or later, Evince version 3.0 or later and the python3
 command available in your PATH.
 Vim does not need to be compiled with python support.
 
 # Installation
+## Pathogen Install
+Do:
+```git clone https://github.com/peder2tm/sved.git ~/.vim/bundle/```
+and create a binding to do forward synchronization:
+nmap <F4> :call SVED_Sync()<CR>
+
+## Manual Install
 Place both files of the plugin in ~/.vim/ftplugin/
 and create a binding to do forward synchronization:
 nmap <F4> :call SVED_Sync()<CR>

@@ -23,13 +23,23 @@ let g:loaded_evinceSync = 1
 let s:spath = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let s:pycmd = s:spath . "/evinceSync.py"
 
-function! SVED_OnExit(job, code)
+function! SVED_VimOnExit(job, code)
 	echom "evinceSynctex job quit with status " . a:code
 	let g:loaded_evinceSync = 0
 endfunction
 
-let g:evinceSyncDaemonJob = job_start(["python3", s:pycmd], 
-			\ {"exit_cb": "SVED_OnExit", "in_mode": "json", "out_mode": "json"})
+function! SVED_NeovimOnExit(job, code, event) dict
+	echom "evinceSynctex job quit with status " . a:code
+	let g:loaded_evinceSync = 0
+endfunction
+
+if has("nvim")
+	let g:evinceSyncDaemonJob = jobstart(["python3", s:pycmd, "1"],
+				\ {"on_exit": "SVED_NeovimOnExit", "rpc": v:true})
+else
+	let g:evinceSyncDaemonJob = job_start(["python3", s:pycmd, "0"],
+				\ {"exit_cb": "SVED_VimOnExit", "in_mode": "json", "out_mode": "json"})
+endif
 
 function! SVED_Sync()
 	let l:origdir = getcwd()
