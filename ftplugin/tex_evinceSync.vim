@@ -69,6 +69,14 @@ function! SVED_Sync()
 				break
 			endif
 		endif
+		let l:matches = glob(expand('%:r').".synctex.gz", 0, 1)
+		if !empty(l:matches)
+			let l:pdffile = fnamemodify(l:matches[0],":p:r:r" ) . ".pdf"
+			if filereadable(l:pdffile)
+				let l:foundpdf = 1
+				break
+			endif
+		endif
 		let l:matches = glob("*.synctex.gz", 0, 1)
 		if !empty(l:matches)
 			let l:pdffile = fnamemodify(l:matches[0],":p:r:r" ) . ".pdf"
