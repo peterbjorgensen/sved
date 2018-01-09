@@ -12,21 +12,21 @@ Vim does not need to be compiled with python support.
 # Installation
 ## Pathogen Install
 Do:
-```git clone https://github.com/peder2tm/sved.git ~/.vim/bundle/```
+`git clone https://github.com/peder2tm/sved.git ~/.vim/bundle/`
 and create a binding to do forward synchronization:
-nmap <F4> :call SVED_Sync()<CR>
+`nmap <F4> :call SVED_Sync()<CR>`
 
 ## Manual Install
-Place both files of the plugin in ~/.vim/ftplugin/
+Place both files of the plugin in `~/.vim/ftplugin/`
 and create a binding to do forward synchronization:
-nmap <F4> :call SVED_Sync()<CR>
+`nmap <F4> :call SVED_Sync()<CR>`
 
 # Forward Synchronization
-The plugin searches for a file called *.latexmain (like vim-latex-suite) or
-*.synctex.gz in order to do forward synchronization.  If your main file of the
+The plugin searches for a file called `*.latexmain` (like vim-latex-suite) or
+`*.synctex.gz` in order to do forward synchronization.  If your main file of the
 latex project is called main.tex, you can create an empty file called
 main.tex.latexmain and the script will use this to find the main pdf.  Compile
-the project with: pdflatex --synctex=1 main.tex
+the project with: `pdflatex --synctex=1 main.tex`
 Then forward synchronization should work.
 
 # Backward Synchronization
