@@ -3,7 +3,7 @@
 " Maintainer:   Peter B. Jørgensen <peterbjorgensen@gmail.com>
 " License:  This file is licensed under the BEER-WARE license rev 42.
 "   THE BEER-WARE LICENSE" (Revision 42):
-"   <peterbjorgensen@gmail.com> wrote this file. 
+"   <peterbjorgensen@gmail.com> wrote this file.
 "   As long as you retain this notice you can do whatever you want with this stuff.
 "   If we meet some day, and you think this stuff is worth it, you can buy me a beer in return.
 
@@ -45,7 +45,7 @@ function! SVED_Sync()
 	let l:origdir = getcwd()
 
 	"Get path of current file
-	let l:curpath = expand('%:p:h')	
+	let l:curpath = expand('%:p:h')
 	if empty(l:curpath)
 		let l:curpath = l:origdir
 	endif
@@ -89,7 +89,7 @@ function! SVED_Sync()
 		cd ..
 		let l:stopdepth -= 1
 	endwhile
-    execute "cd " . fnameescape(l:origdir)
+	execute "cd " . fnameescape(l:origdir)
 
 	if !l:foundpdf
 		echo "Did not find main pdf file"
