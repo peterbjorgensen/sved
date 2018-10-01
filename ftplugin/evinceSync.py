@@ -17,7 +17,7 @@ import sys
 import dbus
 
 from dbus.mainloop.glib import DBusGMainLoop
-from gi.repository import GObject
+from gi.repository import GLib
 
 
 class EvinceSyncSourceCommon():
@@ -193,7 +193,7 @@ def main(enable_logging=False):
 
     dbus.mainloop.glib.threads_init()
     DBusGMainLoop(set_as_default=True)
-    gobj_main_loop = GObject.MainLoop()
+    glib_main_loop = GLib.MainLoop()
 
     if len(sys.argv) == 5:
         # SyncView and quit
@@ -202,19 +202,19 @@ def main(enable_logging=False):
         path_source = sys.argv[4]
 
         def quit_callback():
-            GObject.timeout_add(100, gobj_main_loop.quit)
+            GLib.timeout_add(100, glib_main_loop.quit)
         def sync_view(pdf_path, input_path, curpos):
             sved_daemon = EvinceSyncView(done_callback=quit_callback)
             sved_daemon.sync_view(pdf_path, input_path, curpos)
             return False
 
-        GObject.timeout_add(10, sync_view, pdf, path_source, curpos)
+        GLib.timeout_add(10, sync_view, pdf, path_source, curpos)
     elif len(sys.argv) == 2:
         is_neovim = bool(int(sys.argv[1]))
         # Wait for sync source forever
         start_source_sync_daemon(is_neovim)
 
-    gobj_main_loop.run()
+    glib_main_loop.run()
     logging.debug("Exited mainloop")
     sys.exit(0)
 
