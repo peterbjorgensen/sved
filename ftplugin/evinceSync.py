@@ -57,6 +57,7 @@ class EvinceSyncSourceVim(EvinceSyncSourceCommon):
     Source synchronization deamon for Vim 8 or later"""
     def execute_command(self, command):
         sys.stdout.write((json.dumps(["ex", command]) + "\n"))
+        sys.stdout.write((json.dumps(["ex", "redraw"]) + "\n"))
         sys.stdout.flush()
 
 class EvinceSyncSourceNeovim(EvinceSyncSourceCommon):
