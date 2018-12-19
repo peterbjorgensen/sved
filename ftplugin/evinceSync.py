@@ -75,6 +75,8 @@ class EvinceSyncSourceNeovim(EvinceSyncSourceCommon):
         self.nvim.command(command)
 
 class EvinceSyncView():
+    # Allowed characters described by Glib as G_URI_RESERVED_CHARS_ALLOWED_IN_PATH
+    URI_PATH_SAFE_CHARACTERS = "!$&'()*+,;=:@/"
     """Handle chain of operations for forward synchronisation"""
     def __init__(self, done_callback=None):
         logging.debug("connect_bus: connecting to dbus")
@@ -98,7 +100,7 @@ class EvinceSyncView():
         """Forward sync Evince with source_file and curpos (line,column)"""
         logging.debug("sync_view: Forward syncing")
         self.connect_daemon()
-        pdf_uri = "file://" + urllib.parse.quote(pdf_uri)
+        pdf_uri = "file://" + urllib.parse.quote(pdf_uri, safe=self.URI_PATH_SAFE_CHARACTERS)
         self.pdf_uri = pdf_uri
         self.source_file = source_file
         self.curpos = curpos
@@ -121,8 +123,8 @@ class EvinceSyncView():
     def handle_find_document_reply(self, evince_name):
         """Handle find document reply by calling
         GetWindowList on the returned Evince instance"""
-        logging.debug("handle_find_document_reply: Find document reply: "
-                      + evince_name)
+        logging.debug("handle_find_document_reply: Find document reply: %s",
+                      evince_name)
         if (evince_name != "") and (evince_name is not None):
             self.evince_name = evince_name
             ev_obj = self.bus.get_object(evince_name, "/org/gnome/evince/Evince")
@@ -143,13 +145,16 @@ class EvinceSyncView():
 
     def handle_find_document_error(self, err):
         """Handle errors occured during find_document"""
-        logging.debug("handle_find_document_error: "
-                      + err.get_dbus_message())
+        error = err.get_dbus_message()
+        logging.debug("handle_find_document_error: %s",
+                      error)
+        print("Could not find document: %s" % error)
+        sys.exit(1)
 
     def handle_get_window_list_reply(self, window_list):
         """Handle window_list_reply by calling SyncView on
         the first entry in the window list"""
-        logging.debug("handle_get_window_list_reply: " + str(window_list))
+        logging.debug("handle_get_window_list_reply: %s", str(window_list))
         if window_list:
             window_path = window_list[0]
             window_proxy = self.bus.get_object(self.evince_name, window_path)
@@ -171,8 +176,10 @@ class EvinceSyncView():
 
     def handle_get_window_list_error(self, err):
         """Handle errors in reply to get_window_list"""
-        logging.debug("handle_get_window_list_error: "
-                      + err.get_dbus_message())
+        error = err.get_dbus_message()
+        logging.debug("handle_get_window_list_error: %s", error)
+        print("Could not find document: %s" % error)
+        sys.exit(1)
 
 
 def start_source_sync_daemon(is_neovim):
@@ -191,6 +198,8 @@ def main(enable_logging=False):
             filename='sved_%d.log' % os.getpid(),
             level=logging.DEBUG)
         logging.debug("stdout encoding is %s", sys.stdout.encoding)
+
+    logging.debug("got following arguments %s", " ".join(sys.argv))
 
     dbus.mainloop.glib.threads_init()
     DBusGMainLoop(set_as_default=True)
@@ -214,6 +223,8 @@ def main(enable_logging=False):
         is_neovim = bool(int(sys.argv[1]))
         # Wait for sync source forever
         start_source_sync_daemon(is_neovim)
+    else:
+        raise Exception("Invalid number of command line arguments: got %s" % " ".join(sys.argv))
 
     glib_main_loop.run()
     logging.debug("Exited mainloop")
