@@ -75,8 +75,10 @@ class EvinceSyncSourceNeovim(EvinceSyncSourceCommon):
         self.nvim.command(command)
 
 class EvinceSyncView():
-    # Allowed characters described by Glib as G_URI_RESERVED_CHARS_ALLOWED_IN_PATH
-    URI_PATH_SAFE_CHARACTERS = "!$&'()*+,;=:@/"
+    URI_UNRESERVED_MARKS = "-_.!~*'()" # RFC 2396 Sec 2.3
+    URI_UNRESERVED_PATH_COMPONENT = ":@&=+$," # RFC 2396 Sec 3.3
+    URI_PATH_SAFE_CHARACTERS = \
+        URI_UNRESERVED_MARKS + URI_UNRESERVED_PATH_COMPONENT + "/"
     """Handle chain of operations for forward synchronisation"""
     def __init__(self, done_callback=None):
         logging.debug("connect_bus: connecting to dbus")
