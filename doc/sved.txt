@@ -1,0 +1,48 @@
+*sved.txt*  Synctex-based synchronisation between VIM or Neovim and evince.
+
+INTRODUCTION                                    *sved*
+
+SVED is a Vim plugin enabling synctex synchronization support for Vim and
+Evince through DBus. It provides
+ - |sved-forward-search|: a function to highlight the current buffer
+   line in evince
+ - |sved-backward-search|: When you hit <C-LeftMouse> in evince, the cursor
+   will automatically move in VIM to the matching location in the buffer.
+
+DEPENDENCIES                                    *sved-dependencies*
+
+SVED requires:
+ - VIM 8+ or Neovim
+ - python3 on the path with the modules pygobject3, dbus-python and neovim
+ - Evince 3.0+
+
+Your latex file must be compiled with synctex support. This can be done by
+compiling your project with `pdflatex -synctex=1 main.tex` . This should leave
+a `main.synctex.gz` file in the main directory. If automatic detection of this
+file fails, you can also create an empty file named `main.tex.latexmain`
+alongside your `main.tex`.
+
+FORWARD SEARCH                                  *sved-forward-search*
+
+Forward search is provided by the following function:
+                                                *SVED_Sync*
+SVED_Sync()
+  Highlights the current buffer position in evince.  If the file is not yet
+  opened by evince, a new window will be opened for it.
+
+  You can map this function to a keybinding of your choice, for example: >
+    nmap <F4> :call SVED_Sync()<CR>
+<
+BACKWARD SEARCH                                 *sved-backward-search*
+
+<C-LeftMouse> in Evince will make Vim jump to the corresponding location in
+the buffer. If the file is not yet open, a new buffer will be created for it.
+
+TROUBLESHOOTING                                 *sved-debug*
+
+To debug the dbus bridge process, export the `SVED_DEBUG` environment variable
+before starting VIM. A log file will be created in the current working
+directory.
+
+
+ vim:tw=78:ts=2:ft=help:norl:et
