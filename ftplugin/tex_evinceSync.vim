@@ -29,7 +29,10 @@ function! SVED_VimOnExit(job, code)
 endfunction
 
 function! SVED_NeovimOnExit(job, code, event) dict
-	echom "evinceSynctex job quit with status " . a:code
+	if a:code != 0 || string(v:exiting) == "v:null"
+		" don't print a message on exit for code 0, we don't care
+		echom "evinceSynctex job quit with status " . a:code
+	endif
 	let g:loaded_evinceSync = 0
 endfunction
 
