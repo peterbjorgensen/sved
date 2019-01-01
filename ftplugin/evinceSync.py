@@ -194,7 +194,7 @@ def start_source_sync_daemon(is_neovim):
 def main(enable_logging=False):
     """Main function: setup dbus mainloop and call sync_view
     or start source_sync_daemon depending on sys.argv arguments"""
-    if enable_logging: # Switch to enable debugging to file
+    if enable_logging:
         logging.basicConfig(
             format='%(asctime)s %(levelname)s:%(message)s',
             filename='sved_%d.log' % os.getpid(),
@@ -233,4 +233,4 @@ def main(enable_logging=False):
     sys.exit(0)
 
 if __name__ == "__main__":
-    main()
+    main(enable_logging=os.environ.get("SVED_DEBUG"))
