@@ -37,6 +37,7 @@ BACKWARD SEARCH                                 *sved-backward-search*
 
 <C-LeftMouse> in Evince will make Vim jump to the corresponding location in
 the buffer. If the file is not yet open, a new buffer will be created for it.
+Having |'switchbuf'| set to `useopen` is advised.
 
 TROUBLESHOOTING                                 *sved-debug*
 
