@@ -43,7 +43,26 @@ class EvinceSyncSourceCommon():
         # Unquote string and escape quotation marks
         source = urllib.parse.unquote(input_file[len("file://"):]).replace("\"", "\\\"")
         line = source_link[0]
-        cmd = """execute "edit! +%d " . fnameescape("%s")""" % (line, source)
+        # if the file is already open, scan to the right line
+        # else open a new buffer
+        # E94 = No matching buffer
+        # E37 = Unsaved changes
+        cmd = r"""
+        silent
+        | try
+            | try
+                | execute 'buffer +{line} ' . fnameescape("{file}")
+            | catch /^Vim\%((\a\+)\)\=:E37/
+                | execute 'sbuffer +{line} ' . fnameescape("{file}")
+            | endtry
+        | catch /^Vim\%((\a\+)\)\=:E94/
+            | try
+                | execute 'edit +{line} ' . fnameescape("{file}")
+            | catch /^Vim\%((\a\+)\)\=:E37/
+                | execute 'split +{line} ' . fnameescape("{file}")
+            | endtry
+        | endtry
+        """.format(line=line, file=source)
         logging.debug("on_sync_source: Executing %s", cmd)
         self.execute_command(cmd)
 
