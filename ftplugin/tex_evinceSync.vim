@@ -72,7 +72,11 @@ function! SVED_Sync()
 				break
 			endif
 		endif
-		let l:matches = glob(expand('%:r').".synctex.gz", 0, 1)
+        if exists("g:vimtex_compiler_latexmk.build_dir")
+            let l:matches = glob(g:vimtex_compiler_latexmk.build_dir . "/" . expand('%:r').".synctex.gz", 0, 1)
+        else
+            let l:matches = glob(expand('%:r').".synctex.gz", 0, 1)
+        endif
 		if !empty(l:matches)
 			let l:pdffile = fnamemodify(l:matches[0],":p:r:r" ) . ".pdf"
 			if filereadable(l:pdffile)
@@ -80,7 +84,11 @@ function! SVED_Sync()
 				break
 			endif
 		endif
-		let l:matches = glob("*.synctex.gz", 0, 1)
+        if exists("g:vimtex_compiler_latexmk.build_dir")
+            let l:matches = glob(g:vimtex_compiler_latexmk.build_dir. "/" . "*.synctex.gz", 0, 1)
+        else
+            let l:matches = glob(expand('%:r').".synctex.gz", 0, 1)
+        endif
 		if !empty(l:matches)
 			let l:pdffile = fnamemodify(l:matches[0],":p:r:r" ) . ".pdf"
 			if filereadable(l:pdffile)
