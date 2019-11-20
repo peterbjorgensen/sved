@@ -87,7 +87,7 @@ function! SVED_Sync()
         if exists("g:vimtex_compiler_latexmk.build_dir")
             let l:matches = glob(g:vimtex_compiler_latexmk.build_dir. "/" . "*.synctex.gz", 0, 1)
         else
-            let l:matches = glob(expand('%:r').".synctex.gz", 0, 1)
+            let l:matches = glob("*.synctex.gz", 0, 1)
         endif
 		if !empty(l:matches)
 			let l:pdffile = fnamemodify(l:matches[0],":p:r:r" ) . ".pdf"
