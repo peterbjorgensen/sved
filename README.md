@@ -7,6 +7,8 @@ Vim/gVim and Neovim are supported
 SVED requires Neovim or Vim 8 (for asynchronous job support) 
 or later, Evince version 3.0 or later and the python3
 command available in your PATH.
+You need the Python `pygobject` package as well as `dbus-python`, which are most likely already installed in your system.
+For Neovim you also need the `pynvim` Python package. Install with `pip install pynvim` or through your package manager.
 Vim does not need to be compiled with python support.
 
 # Installation

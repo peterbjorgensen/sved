@@ -85,10 +85,10 @@ class EvinceSyncSourceNeovim(EvinceSyncSourceCommon):
     def __init__(self):
         super(EvinceSyncSourceNeovim, self).__init__()
 
-        logging.debug("importing neovim module")
-        import neovim
+        logging.debug("importing pynvim module")
+        import pynvim
         logging.debug("attaching to neovim through stdio")
-        self.nvim = neovim.attach("stdio")
+        self.nvim = pynvim.attach("stdio")
 
     def execute_command(self, command):
         self.nvim.command(command)

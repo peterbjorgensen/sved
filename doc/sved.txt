@@ -13,7 +13,7 @@ DEPENDENCIES                                    *sved-dependencies*
 
 SVED requires:
  - VIM 8+ or Neovim
- - python3 on the path with the modules pygobject3, dbus-python and neovim
+ - python3 on the path with the modules pygobject, dbus-python and pynvim
  - Evince 3.0+
 
 Your latex file must be compiled with synctex support. This can be done by
