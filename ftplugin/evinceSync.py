@@ -49,19 +49,19 @@ class EvinceSyncSourceCommon():
         # E37 = Unsaved changes
         cmd = r"""
         silent
-        | try
-            | try
-                | execute 'buffer +{line} ' . fnameescape("{file}")
-            | catch /^Vim\%((\a\+)\)\=:E37/
-                | execute 'sbuffer +{line} ' . fnameescape("{file}")
-            | endtry
-        | catch /^Vim\%((\a\+)\)\=:E94/
-            | try
-                | execute 'edit +{line} ' . fnameescape("{file}")
-            | catch /^Vim\%((\a\+)\)\=:E37/
-                | execute 'split +{line} ' . fnameescape("{file}")
-            | endtry
-        | endtry
+        try
+            try
+                execute 'buffer +{line} ' . fnameescape("{file}")
+            catch /^Vim\%((\a\+)\)\=:E37/
+                execute 'sbuffer +{line} ' . fnameescape("{file}")
+            endtry
+        catch /^Vim\%((\a\+)\)\=:E94/
+            try
+                execute 'edit +{line} ' . fnameescape("{file}")
+            catch /^Vim\%((\a\+)\)\=:E37/
+                execute 'split +{line} ' . fnameescape("{file}")
+            endtry
+        endtry
         """.format(line=line, file=source)
         logging.debug("on_sync_source: Executing %s", cmd)
         self.execute_command(cmd)
