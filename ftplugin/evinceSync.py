@@ -87,8 +87,13 @@ class EvinceSyncSourceNeovim(EvinceSyncSourceCommon):
 
         logging.debug("importing pynvim module")
         import pynvim
-        logging.debug("attaching to neovim through stdio")
-        self.nvim = pynvim.attach("stdio")
+        socket = os.getenv("NVIM_LISTEN_ADDRESS")
+        if socket is None:
+            logging.debug("attaching to neovim through stdio")
+            self.nvim = pynvim.attach("stdio")
+        else:
+            logging.debug("attaching to neovim through socket %s" % socket)
+            self.nvim = pynvim.attach("socket", path=socket)
 
     def execute_command(self, command):
         self.nvim.command(command)
