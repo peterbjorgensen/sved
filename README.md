@@ -18,6 +18,12 @@ Do:
 and create a binding to do forward synchronization:
 `nmap <F4> :call SVED_Sync()<CR>`
 
+## [vim-plug](https://github.com/junegunn/vim-plug) Install
+Add `Plug 'peterbjorgensen/sved'` to [your list of plugins](https://github.com/junegunn/vim-plug#usage)
+and tell vim-plug to install it with `:PlugInstall`.
+Then create a binding to do forward synchronization:
+`nmap <F4> :call SVED_Sync()<CR>`
+
 ## Manual Install
 Place both files of the plugin in `~/.vim/ftplugin/`
 and create a binding to do forward synchronization:
