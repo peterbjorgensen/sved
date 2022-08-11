@@ -36,11 +36,17 @@ function! SVED_NeovimOnExit(job, code, event) dict
 	let g:loaded_evinceSync = 0
 endfunction
 
+" Trust the shebang if g:python3_host_prog is not set
+if g:python3_host_prog != ""
+	let s:pycmd_list = [g:python3_host_prog, s:pycmd]
+else
+	let s:pycmd_list = [s:pycmd]
+endif
 if has("nvim")
-	let g:evinceSyncDaemonJob = jobstart([s:pycmd, "1"],
+	let g:evinceSyncDaemonJob = jobstart(s:pycmd_list + ["1"],
 				\ {"on_exit": "SVED_NeovimOnExit", "rpc": v:true})
 else
-	let g:evinceSyncDaemonJob = job_start([s:pycmd, "0"],
+	let g:evinceSyncDaemonJob = job_start(s:pycmd_list + ["0"],
 				\ {"exit_cb": "SVED_VimOnExit", "in_mode": "json", "out_mode": "json"})
 endif
 
@@ -102,7 +108,7 @@ function! SVED_Sync()
 
 	let l:cursorpos = getcurpos()
 
-	let l:command = shellescape(s:pycmd) . " " . shellescape(l:pdffile) . " " .
+	let l:command = join(s:pycmd_list, " ") . " " . shellescape(l:pdffile) . " " .
 				\ l:cursorpos[1] . " " . l:cursorpos[2] . " " . shellescape(expand("%:p"))
 	let l:output = system(l:command)
 	echo l:output
