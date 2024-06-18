@@ -37,7 +37,7 @@ function! SVED_NeovimOnExit(job, code, event) dict
 endfunction
 
 " Trust the shebang if g:python3_host_prog is not set
-if g:python3_host_prog != ""
+if exists("g:python3_host_prog") && g:python3_host_prog != ""
 	let s:pycmd_list = [g:python3_host_prog, s:pycmd]
 else
 	let s:pycmd_list = [s:pycmd]
